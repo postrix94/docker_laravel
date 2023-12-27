@@ -53,9 +53,9 @@ services:
     env_file:
       - ./src/.env
     environment:
-      MYSQL_ROOT_PASSWORD: DB_ROOT_PASSWORD
-      MYSQL_USER: DB_USERNAME
-      MYSQL_PASSWORD: DB_PASSWORD
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
     networks:
       - db_network
     volumes:
