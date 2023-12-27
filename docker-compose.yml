@@ -1,0 +1,91 @@
+version: "3.9"
+
+services:
+
+  composer:
+    container_name: composer
+    build:
+      context: .
+      dockerfile: ./composer/Dockerfile
+    volumes:
+      - ./src:/var/www/html/steko_id
+
+
+  node:
+    container_name: front
+    build:
+      context: .
+      dockerfile: ./node/Dockerfile
+    volumes:
+      - ./src:/var/www/html/steko_id
+    ports:
+      - "3000:3000"
+    expose:
+      - 3000
+    depends_on:
+      - php
+
+
+  php:
+    container_name: backend
+    build:
+      context: '.'
+      dockerfile: ./php/Dockerfile
+    volumes:
+      - ./src:/var/www/html/steko_id
+      - ./php/apache/:/etc/apache2/sites-enabled
+    ports:
+      - "4000:80"
+    expose:
+      - 80
+    depends_on:
+      - composer
+      - db
+    networks:
+      - db_network
+
+
+  db:
+    container_name: mysql
+    build:
+      context: .
+      dockerfile: ./db/Dockerfile
+    env_file:
+      - ./src/.env
+    environment:
+      MYSQL_ROOT_PASSWORD: DB_ROOT_PASSWORD
+      MYSQL_USER: DB_USERNAME
+      MYSQL_PASSWORD: DB_PASSWORD
+    networks:
+      - db_network
+    volumes:
+      - "./db/mysql/steko_id:/var/lib/mysql"
+
+
+
+  phpmyadmin:
+    image: phpmyadmin:5.2.1-apache
+    container_name: php_my_admin
+    ports:
+      - 8080:80
+    networks:
+      - db_network
+
+
+  artisan:
+    container_name: artisan
+    build:
+      context: .
+      dockerfile: ./artisan/Dockerfile
+    volumes:
+      - ./src:/var/www/html/steko_id
+    networks:
+      - db_network
+
+
+
+
+networks:
+  db_network:
+    driver: bridge
+

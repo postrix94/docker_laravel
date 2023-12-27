@@ -1,0 +1,4 @@
+.idea
+db/mysql/steko_id/
+src/node_modules/
+src/vendor/
